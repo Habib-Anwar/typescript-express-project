@@ -3,7 +3,9 @@ import { ProductServices } from "./product.service";
 
 const createProduct = async (req: Request, res: Response) => {
   const productData = req.body;
-  const result = await ProductServices.createProduct(productData);
+  const searchTerm = req.body.searchTerm || productData.name;
+  console.log(searchTerm);
+  const result = await ProductServices.createProduct(productData, searchTerm);
   res.json({
     success: true,
     message: "Product is created successfully",
@@ -44,9 +46,27 @@ const getProductById = async (req: Request, res: Response) => {
     });
   }
 };
+const getProductBySlug = async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params;
+    const result = await ProductServices.getProductBySlug(slug);
+    res.status(200).json({
+      success: true,
+      message: "Products matching search term 'iphone' fetched successfully!",
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: "Could not fetch product !",
+      error: err,
+    });
+  }
+};
 
 export const productController = {
   createProduct,
   getAllProducts,
   getProductById,
+  getProductBySlug,
 };
